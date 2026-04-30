@@ -1,0 +1,35 @@
+{
+  "name": "TaskGroup",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the task group"
+    },
+    "monster_name": {
+      "type": "string",
+      "description": "Custom name for the monster",
+      "default": "Monster"
+    },
+    "monster_image": {
+      "type": "string",
+      "description": "URL to monster image"
+    },
+    "color": {
+      "type": "string",
+      "description": "Theme color for the group",
+      "default": "#6B21A8"
+    },
+    "participants": {
+      "type": "array",
+      "description": "Array of participant names",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

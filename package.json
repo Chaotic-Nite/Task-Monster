@@ -1,0 +1,26 @@
+{
+  "name": "task-monster-fullstack",
+  "version": "1.0.0",
+  "description": "Task Monster Full Stack Application",
+  "scripts": {
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "install:backend": "cd task-monster-backend && npm install",
+    "install:frontend": "cd task-monster && npm install",
+    "start": "npm run start:backend & npm run start:frontend",
+    "start:backend": "cd task-monster-backend && npm start",
+    "start:frontend": "cd task-monster && npm start",
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "cd task-monster-backend && npm run dev",
+    "dev:frontend": "cd task-monster && npm start",
+    "build": "cd task-monster && npm run build",
+    "test": "cd task-monster && npm test"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.16",
+    "framer-motion": "^12.23.26",
+    "lucide-react": "^0.562.0"
+  },
+  "keywords": ["task", "monster", "fullstack", "react", "nodejs"],
+  "author": "",
+  "license": "MIT"
+}

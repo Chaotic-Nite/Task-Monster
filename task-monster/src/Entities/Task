@@ -1,0 +1,38 @@
+{
+  "name": "Task",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string",
+      "description": "ID of the parent task group"
+    },
+    "title": {
+      "type": "string",
+      "description": "Task description"
+    },
+    "points": {
+      "type": "number",
+      "description": "Points/damage value of the task",
+      "default": 10
+    },
+    "completed": {
+      "type": "boolean",
+      "description": "Whether the task is completed",
+      "default": false
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the task was completed"
+    },
+    "assigned_to": {
+      "type": "string",
+      "description": "Name of the person assigned to this task"
+    }
+  },
+  "required": [
+    "group_id",
+    "title",
+    "points"
+  ]
+}

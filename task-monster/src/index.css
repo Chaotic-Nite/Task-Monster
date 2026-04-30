@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-bg-from: #ffffff;
+  --app-bg-to: #e7c8c8;
+  --auth-bg-from: #ffffff;
+  --auth-bg-to: #e7c8c8;
+  --overlay-bg: rgba(0, 0, 0, 0.75);
+}
+
+.app-page-bg {
+  background-image: linear-gradient(to bottom right, var(--app-bg-from), var(--app-bg-to));
+}
+
+.auth-page-bg {
+  background-image: linear-gradient(to bottom, var(--auth-bg-from), var(--auth-bg-to));
+}
+
+.app-overlay-bg {
+  background-color: var(--overlay-bg);
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

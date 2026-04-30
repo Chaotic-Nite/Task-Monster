@@ -1,0 +1,15 @@
+node_modules
+
+# Local MongoDB data created by backend fallback storage
+task-monster-backend/.mongo-data/
+task-monster-backend/.mongo-data/**
+
+# Common lock and db artifacts
+*.lock
+WiredTiger*
+
+# Environment files (keep templates)
+.env
+.env.*
+!.env.example
+!*/.env.example
