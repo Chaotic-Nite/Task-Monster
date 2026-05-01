@@ -60,7 +60,8 @@ async function connectDB() {
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/task-groups', require('./routes/taskGroups'));
+app.use('/api/task-groups', require('./routes/quests'));
+app.use('/api/quests', require('./routes/quests'));
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/adventuring-parties', require('./routes/adventuringParties'));
 app.use('/api/quest-presets', require('./routes/questPresets'));

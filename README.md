@@ -208,10 +208,64 @@ npm run dev        # Start development server (requires nodemon)
 
 ## Deployment
 
-1. Set up MongoDB database
-2. Configure environment variables
-3. Deploy backend and frontend separately
-4. Update API URLs for production
+Task Monster should be deployed as two apps:
+
+- Frontend: Vercel, using the `task-monster` folder
+- Backend: Render, using the `task-monster-backend` folder
+- Database: MongoDB Atlas
+
+### Recommended Production Setup
+
+1. Create a MongoDB Atlas database and copy the connection string.
+2. Deploy the backend to Render.
+3. Deploy the frontend to Vercel.
+4. Set the frontend `REACT_APP_API_URL` to your deployed backend URL.
+
+### Backend on Render
+
+This repo includes [render.yaml](render.yaml) for the backend service.
+
+Required backend environment variables:
+
+```bash
+MONGODB_URI=mongodb+srv://...
+JWT_SECRET=use-a-long-random-secret
+NODE_ENV=production
+```
+
+The backend service serves the API at:
+
+```text
+https://your-render-service.onrender.com/api
+```
+
+### Frontend on Vercel
+
+Deploy the [task-monster](task-monster) folder as the frontend project.
+
+Required frontend environment variable:
+
+```bash
+REACT_APP_API_URL=https://your-render-service.onrender.com/api
+```
+
+Use [task-monster/.env.example](task-monster/.env.example) as the local template.
+
+This repo also includes [task-monster/vercel.json](task-monster/vercel.json) so React routes like `/quest/:id` resolve correctly on refresh.
+
+### Local vs Production
+
+- Local frontend URL example: `http://localhost:3000/#` or `http://localhost:3000`
+- Local API URL: `http://localhost:5000/api`
+- Production quest detail URL example: `/quest/<id>`
+
+### Deployment Checklist
+
+1. Confirm MongoDB Atlas is reachable from Render.
+2. Set `MONGODB_URI` and `JWT_SECRET` in Render.
+3. Set `REACT_APP_API_URL` in Vercel.
+4. Redeploy the frontend after changing environment variables.
+5. Test login, quest creation, task creation, and quest detail routing.
 
 ## License
 

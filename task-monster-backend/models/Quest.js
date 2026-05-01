@@ -1,9 +1,6 @@
-module.exports = require('./Quest');
-
-/* Original schema preserved below for reference:
 const mongoose = require('mongoose');
 
-const taskGroupSchema = new mongoose.Schema({
+const questSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -69,10 +66,9 @@ const taskGroupSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-taskGroupSchema.pre('save', function(next) {
+questSchema.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
-module.exports = mongoose.model('TaskGroup', taskGroupSchema);
-*/
+module.exports = mongoose.model('Quest', questSchema);

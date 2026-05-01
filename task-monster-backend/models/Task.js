@@ -26,9 +26,9 @@ const taskSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
-  group_id: {
+  quest_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'TaskGroup',
+    ref: 'Quest',
     required: true
   },
   created_by: {

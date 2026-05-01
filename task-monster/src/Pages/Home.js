@@ -4,8 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { BookOpen, ChevronDown, ChevronUp, Plus, Swords, Shield, Trophy, Loader2, Users, X } from 'lucide-react';
 import { Button } from "../Components/ui/button";
-import GroupCard from '../Components/Monster/GroupCard.js';
-import CreateGroupModal from '../Components/Monster/CreateGroupModal.js';
+import QuestCard from '../Components/Monster/QuestCard.js';
+import CreateQuestModal from '../Components/Monster/CreateQuestModal.js';
 import AdventuringPartyManager from '../Components/Monster/AdventuringPartyManager.js';
 import TaskManager from '../Components/Monster/TaskManager.js';
 import { useUser } from '../contexts/UserContext';
@@ -19,9 +19,9 @@ export default function Home() {
   const { user } = useUser();
   const queryClient = useQueryClient();
 
-  const { data: groups = [], isLoading: groupsLoading } = useQuery({
-    queryKey: ['groups', user?.username],
-    queryFn: () => apiClient.getTaskGroups(),
+  const { data: quests = [], isLoading: questsLoading } = useQuery({
+    queryKey: ['quests', user?.username],
+    queryFn: () => apiClient.getQuests(),
     enabled: !!user?.username,
   });
 
@@ -44,10 +44,10 @@ export default function Home() {
     enabled: !!user?.username,
   });
 
-  const createGroupMutation = useMutation({
-    mutationFn: (data) => apiClient.createTaskGroup(data),
+  const createQuestMutation = useMutation({
+    mutationFn: (data) => apiClient.createQuest(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['quests'] });
     },
   });
 
@@ -76,22 +76,24 @@ export default function Home() {
     return <Login />;
   }
 
-  const resolveTaskGroupId = (task) => {
-    if (!task?.group_id) return null;
-    if (typeof task.group_id === 'string') return task.group_id;
-    return task.group_id.id || task.group_id._id || null;
+  const resolveTaskQuestId = (task) => {
+    // Support both quest_id (current) and legacy group_id field
+    const questReference = task?.quest_id || task?.group_id;
+    if (!questReference) return null;
+    if (typeof questReference === 'string') return questReference;
+    return questReference.id || questReference._id || null;
   };
 
-  const getTasksForGroup = (groupId) => {
-    return tasks.filter((t) => resolveTaskGroupId(t) === groupId);
+  const getTasksForQuest = (questId) => {
+    return tasks.filter((task) => resolveTaskQuestId(task) === questId);
   };
 
-  const totalMonsters = groups.length;
-  const defeatedMonsters = groups.filter(g => {
-    const groupTasks = getTasksForGroup(g.id);
-    const totalTaskPoints = groupTasks.reduce((sum, t) => sum + t.points, 0);
-    const completedPoints = groupTasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
-    const maxHP = g.monster_hp || totalTaskPoints;
+  const totalMonsters = quests.length;
+  const defeatedMonsters = quests.filter((quest) => {
+    const questTasks = getTasksForQuest(quest.id);
+    const totalTaskPoints = questTasks.reduce((sum, t) => sum + t.points, 0);
+    const completedPoints = questTasks.filter(t => t.completed).reduce((sum, t) => sum + t.points, 0);
+    const maxHP = quest.monster_hp || totalTaskPoints;
     const currentHP = Math.max(maxHP - completedPoints, 0);
     return maxHP > 0 && currentHP === 0;
   }).length;
@@ -99,7 +101,7 @@ export default function Home() {
   const overallMonstersDefeated = lifetimeStats?.monsters_defeated || 0;
   const overallCompletionRate = lifetimeStats?.overall_completion_rate || 0;
 
-  if (groupsLoading || tasksLoading || partiesLoading) {
+  if (questsLoading || tasksLoading || partiesLoading) {
     return (
       <div className="min-h-screen app-page-bg flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
@@ -180,7 +182,7 @@ export default function Home() {
           )}
         </motion.div>
 
-        {/* Groups Section */}
+        {/* Quests Section */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-slate-800">Your Quests</h2>
           <div className="flex gap-3">
@@ -210,8 +212,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Groups Grid */}
-        {groups.length === 0 ? (
+        {/* Quests Grid */}
+        {quests.length === 0 ? (
           <motion.div 
             className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300"
             initial={{ opacity: 0 }}
@@ -223,26 +225,26 @@ export default function Home() {
           </motion.div>
         ) : (
           <div className="grid md:grid-cols-2 gap-4">
-            {groups.map((group, index) => (
+            {quests.map((quest, index) => (
               <motion.div
-                key={group.id}
+                key={quest.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <GroupCard 
-                  group={group} 
-                  tasks={getTasksForGroup(group.id)} 
+                <QuestCard 
+                  quest={quest} 
+                  tasks={getTasksForQuest(quest.id)} 
                 />
               </motion.div>
             ))}
           </div>
         )}
 
-        <CreateGroupModal
+        <CreateQuestModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onCreate={createGroupMutation.mutate}
+          onCreate={createQuestMutation.mutate}
           adventuringParties={adventuringParties}
         />
 

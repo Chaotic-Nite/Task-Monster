@@ -1,7 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Routes, Route, useParams } from 'react-router-dom';
 import Home from './Pages/Home';
-import GroupDetail from './Pages/GroupDetail';
+import QuestDetail from './Pages/QuestDetail';
+
+function LegacyGroupRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/quest/${id}`} replace />;
+}
 
 function App() {
   return (
@@ -9,7 +14,8 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/group/:id" element={<GroupDetail />} />
+          <Route path="/quest/:id" element={<QuestDetail />} />
+          <Route path="/group/:id" element={<LegacyGroupRedirect />} />
         </Routes>
       </div>
     </Router>

@@ -2,9 +2,9 @@
   "name": "Task",
   "type": "object",
   "properties": {
-    "group_id": {
+    "quest_id": {
       "type": "string",
-      "description": "ID of the parent task group"
+      "description": "ID of the parent quest"
     },
     "title": {
       "type": "string",
@@ -31,7 +31,7 @@
     }
   },
   "required": [
-    "group_id",
+    "quest_id",
     "title",
     "points"
   ]

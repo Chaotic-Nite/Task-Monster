@@ -1,13 +1,14 @@
-// Backward-compatibility alias — canonical route file is quests.js
-module.exports = require('./quests');
-
+const express = require('express');
+const { body, validationResult } = require('express-validator');
+const Quest = require('../models/Quest');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
 // Get all quests for the authenticated user
 router.get('/', auth, async (req, res) => {
   try {
-    const quests = await TaskGroup.find({ created_by: req.user._id })
+    const quests = await Quest.find({ created_by: req.user._id })
       .sort({ createdAt: -1 });
     res.json(quests);
   } catch (error) {
@@ -19,7 +20,7 @@ router.get('/', auth, async (req, res) => {
 // Get a specific quest
 router.get('/:id', auth, async (req, res) => {
   try {
-    const quest = await TaskGroup.findOne({
+    const quest = await Quest.findOne({
       _id: req.params.id,
       created_by: req.user._id
     });
@@ -59,7 +60,7 @@ router.post('/', auth, [
       created_by: req.user._id
     };
 
-    const quest = new TaskGroup(questData);
+    const quest = new Quest(questData);
     await quest.save();
 
     res.status(201).json(quest);
@@ -88,7 +89,7 @@ router.put('/:id', auth, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const quest = await TaskGroup.findOneAndUpdate(
+    const quest = await Quest.findOneAndUpdate(
       { _id: req.params.id, created_by: req.user._id },
       req.body,
       { new: true, runValidators: true }
@@ -108,7 +109,7 @@ router.put('/:id', auth, [
 // Delete a quest
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const quest = await TaskGroup.findOneAndDelete({
+    const quest = await Quest.findOneAndDelete({
       _id: req.params.id,
       created_by: req.user._id
     });

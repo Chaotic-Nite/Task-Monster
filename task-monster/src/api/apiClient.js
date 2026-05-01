@@ -94,33 +94,54 @@ class ApiClient {
     });
   }
 
-  // Task Group methods
+  // Quest methods
+  async getQuests() {
+    return this.request('/quests');
+  }
+
+  async getQuest(id) {
+    return this.request(`/quests/${id}`);
+  }
+
+  async createQuest(questData) {
+    return this.request('/quests', {
+      method: 'POST',
+      body: JSON.stringify(questData),
+    });
+  }
+
+  async updateQuest(id, questData) {
+    return this.request(`/quests/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(questData),
+    });
+  }
+
+  async deleteQuest(id) {
+    return this.request(`/quests/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Backward-compatible task group aliases
   async getTaskGroups() {
-    return this.request('/task-groups');
+    return this.getQuests();
   }
 
   async getTaskGroup(id) {
-    return this.request(`/task-groups/${id}`);
+    return this.getQuest(id);
   }
 
   async createTaskGroup(groupData) {
-    return this.request('/task-groups', {
-      method: 'POST',
-      body: JSON.stringify(groupData),
-    });
+    return this.createQuest(groupData);
   }
 
   async updateTaskGroup(id, groupData) {
-    return this.request(`/task-groups/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(groupData),
-    });
+    return this.updateQuest(id, groupData);
   }
 
   async deleteTaskGroup(id) {
-    return this.request(`/task-groups/${id}`, {
-      method: 'DELETE',
-    });
+    return this.deleteQuest(id);
   }
 
   // Adventuring Party methods
@@ -178,8 +199,8 @@ class ApiClient {
   }
 
   // Task methods
-  async getTasks(groupId = null) {
-    const query = groupId ? `?group_id=${groupId}` : '';
+  async getTasks(questId = null) {
+    const query = questId ? `?quest_id=${questId}` : '';
     return this.request(`/tasks${query}`);
   }
 
