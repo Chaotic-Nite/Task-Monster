@@ -137,7 +137,7 @@ const Login = () => {
           <p className="mt-4 text-sm text-slate-600">
             {isLogin
               ? "Welcome back! Complete tasks to defeat monsters."
-              : "Join Task Monster and start your adventure!"
+              : "Join Hero's Taskforge and start your adventure!"
             }
           </p>
         </div>

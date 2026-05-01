@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
+const Task = require('../models/Task');
 const auth = require('../middleware/auth');
 
 const router = express.Router();
@@ -118,8 +119,15 @@ router.get('/stats', auth, async (req, res) => {
       monsters_defeated: 0
     };
 
-    const overallCompletionRate = lifetimeStats.tasks_created > 0
-      ? Math.round((lifetimeStats.tasks_completed / lifetimeStats.tasks_created) * 100)
+    // Calculate completion from tasks that currently exist for this user.
+    // This avoids counting "future" or historical counters that no longer reflect active data.
+    const [totalTaskCount, completedTaskCount] = await Promise.all([
+      Task.countDocuments({ created_by: req.user._id }),
+      Task.countDocuments({ created_by: req.user._id, completed: true })
+    ]);
+
+    const overallCompletionRate = totalTaskCount > 0
+      ? Math.round((completedTaskCount / totalTaskCount) * 100)
       : 0;
 
     res.json({

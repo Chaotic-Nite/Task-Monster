@@ -19,30 +19,54 @@ const COLORS = [
 
 export default function CreateQuestModal({ isOpen, onClose, onCreate, adventuringParties = [] }) {
   const [name, setName] = useState('');
+  const [monsterMode, setMonsterMode] = useState('dnd');
   const [selectedMonster, setSelectedMonster] = useState(null);
+  const [customMonsterName, setCustomMonsterName] = useState('');
+  const [customMonsterHp, setCustomMonsterHp] = useState('');
+  const [customMonsterImage, setCustomMonsterImage] = useState('');
   const [color, setColor] = useState(COLORS[0]);
   const [selectedPartyId, setSelectedPartyId] = useState('');
   const [isPartyDropdownOpen, setIsPartyDropdownOpen] = useState(false);
 
+  const parsedCustomHp = Number.parseInt(customMonsterHp, 10);
+  const isCustomMonsterValid =
+    customMonsterName.trim().length > 0 &&
+    Number.isFinite(parsedCustomHp) &&
+    parsedCustomHp > 0 &&
+    customMonsterImage.trim().length > 0;
+  const isDndMonsterValid = !!selectedMonster;
+  const canSubmit = name.trim() && (monsterMode === 'dnd' ? isDndMonsterValid : isCustomMonsterValid);
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!name.trim()) return;
+    if (!canSubmit) return;
 
     const selectedParty = adventuringParties.find((party) => party.id === selectedPartyId);
+    const useCustomMonster = monsterMode === 'custom';
 
     onCreate({
       name: name.trim(),
-      monster_name: selectedMonster ? selectedMonster.name : 'Monster',
-      monster_dnd_index: selectedMonster ? selectedMonster.dnd_index : undefined,
-      monster_hp: selectedMonster ? selectedMonster.hp : undefined,
-      monster_image: selectedMonster?.image || undefined,
+      monster_name: useCustomMonster
+        ? customMonsterName.trim()
+        : selectedMonster
+          ? selectedMonster.name
+          : 'Monster',
+      monster_dnd_index: useCustomMonster ? undefined : selectedMonster ? selectedMonster.dnd_index : undefined,
+      monster_hp: useCustomMonster ? parsedCustomHp : selectedMonster ? selectedMonster.hp : undefined,
+      monster_image: useCustomMonster
+        ? customMonsterImage.trim() || undefined
+        : selectedMonster?.image || undefined,
       color,
       adventuring_party_id: selectedPartyId || undefined,
       students: selectedParty ? selectedParty.students : []
     });
 
     setName('');
+    setMonsterMode('dnd');
     setSelectedMonster(null);
+    setCustomMonsterName('');
+    setCustomMonsterHp('');
+    setCustomMonsterImage('');
     setColor(COLORS[0]);
     setSelectedPartyId('');
     onClose();
@@ -93,17 +117,90 @@ export default function CreateQuestModal({ isOpen, onClose, onCreate, adventurin
                     onChange={(event) => setName(event.target.value)}
                     placeholder="e.g., Daily Quest"
                     className="text-lg"
+                    required
                     autoFocus
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label>Monster</Label>
-                  <MonsterPicker
-                    selectedMonster={selectedMonster}
-                    onSelect={setSelectedMonster}
-                    themeColor={color}
-                  />
+                  <div className="grid grid-cols-2 gap-2 rounded-lg bg-slate-100 p-1">
+                    <button
+                      type="button"
+                      className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                        monsterMode === 'dnd'
+                          ? 'bg-white text-slate-800 shadow-sm'
+                          : 'text-slate-600 hover:text-slate-800'
+                      }`}
+                      onClick={() => {
+                        setMonsterMode('dnd');
+                      }}
+                    >
+                      D&D Monster
+                    </button>
+                    <button
+                      type="button"
+                      className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                        monsterMode === 'custom'
+                          ? 'bg-white text-slate-800 shadow-sm'
+                          : 'text-slate-600 hover:text-slate-800'
+                      }`}
+                      onClick={() => {
+                        setMonsterMode('custom');
+                        setSelectedMonster(null);
+                      }}
+                    >
+                      Create Your Own
+                    </button>
+                  </div>
+
+                  {monsterMode === 'dnd' ? (
+                    <>
+                      <MonsterPicker
+                        selectedMonster={selectedMonster}
+                        onSelect={setSelectedMonster}
+                        themeColor={color}
+                      />
+                      {!selectedMonster && (
+                        <p className="text-xs text-red-600">Please select a monster.</p>
+                      )}
+                    </>
+                  ) : (
+                    <div className="space-y-3 rounded-lg border border-slate-200 p-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="custom-monster-name">Monster Name</Label>
+                        <Input
+                          id="custom-monster-name"
+                          value={customMonsterName}
+                          onChange={(event) => setCustomMonsterName(event.target.value)}
+                          placeholder="e.g., Homework Hydra"
+                          required={monsterMode === 'custom'}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="custom-monster-hp">Health (HP)</Label>
+                        <Input
+                          id="custom-monster-hp"
+                          type="number"
+                          min="1"
+                          value={customMonsterHp}
+                          onChange={(event) => setCustomMonsterHp(event.target.value)}
+                          placeholder="e.g., 120"
+                          required={monsterMode === 'custom'}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="custom-monster-image">Image URL</Label>
+                        <Input
+                          id="custom-monster-image"
+                          value={customMonsterImage}
+                          onChange={(event) => setCustomMonsterImage(event.target.value)}
+                          placeholder="https://example.com/monster.png"
+                          required={monsterMode === 'custom'}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -201,7 +298,7 @@ export default function CreateQuestModal({ isOpen, onClose, onCreate, adventurin
                   <Button type="button" variant="outline" onClick={onClose} className="flex-1">
                     Cancel
                   </Button>
-                  <Button type="submit" className="flex-1 gap-2" style={{ backgroundColor: color }} disabled={!name.trim()}>
+                  <Button type="submit" className="flex-1 gap-2" style={{ backgroundColor: color }} disabled={!canSubmit}>
                     <Swords className="w-4 h-4" />
                     Start Quest
                   </Button>

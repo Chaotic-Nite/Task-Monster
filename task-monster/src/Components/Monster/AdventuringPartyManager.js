@@ -332,7 +332,7 @@ export default function AdventuringPartyManager({
                             <Input
                               value={newStudentName}
                               onChange={(e) => setNewStudentName(e.target.value)}
-                              placeholder="Student name"
+                              placeholder="Adventurer's name"
                               className="flex-1"
                             />
                             <Button type="button" onClick={addStudent}>
